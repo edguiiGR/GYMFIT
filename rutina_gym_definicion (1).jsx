@@ -1,55 +1,109 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import React, { useState, useEffect } from "react";
 
 const rutina = {
   "Día 1": {
     titulo: "Pecho y Tríceps",
     ejercicios: [
-      { nombre: "Press banca plano", imagen: "https://via.placeholder.com/80?text=Press+Banca" },
-      { nombre: "Press inclinado mancuernas", imagen: "https://via.placeholder.com/80?text=Press+Inclinado" },
-      { nombre: "Fondos en paralelas", imagen: "https://via.placeholder.com/80?text=Fondos" }
+      { nombre: "Press banca plano", series: 4, repeticiones: "8-12" },
+      { nombre: "Press inclinado mancuernas", series: 4, repeticiones: "8-12" },
+      { nombre: "Fondos en paralelas", series: 3, repeticiones: "12-15" },
+      { nombre: "Extensiones de tríceps polea", series: 3, repeticiones: "12-15" }
     ],
     core: ["Plancha 3x1min", "Ab wheel 3x12"],
     hiit: ["Sprints 30s x 10"],
     dieta: "Desayuno: Avena + claras; Almuerzo: Pollo + quinoa; Cena: Ensalada + pescado."
+  },
+  "Día 2": {
+    titulo: "Espalda y Bíceps",
+    ejercicios: [
+      { nombre: "Dominadas", series: 4, repeticiones: "6-10" },
+      { nombre: "Remo con barra", series: 4, repeticiones: "8-12" },
+      { nombre: "Curl bíceps con mancuernas", series: 3, repeticiones: "12-15" },
+      { nombre: "Curl martillo", series: 3, repeticiones: "12-15" }
+    ],
+    core: ["Crunches 3x20", "Russian twists 3x30"],
+    hiit: ["Burpees 40s x 8"],
+    dieta: "Desayuno: Yogur griego + frutos rojos; Almuerzo: Salmón + arroz integral; Cena: Verduras + tortilla."
+  },
+  "Día 3": {
+    titulo: "Piernas",
+    ejercicios: [
+      { nombre: "Sentadillas", series: 4, repeticiones: "8-12" },
+      { nombre: "Prensa", series: 4, repeticiones: "10-15" },
+      { nombre: "Peso muerto rumano", series: 4, repeticiones: "8-12" },
+      { nombre: "Elevaciones de gemelos", series: 3, repeticiones: "15-20" }
+    ],
+    core: ["Elevaciones de piernas 3x15", "Plancha lateral 3x45s"],
+    hiit: ["Saltos pliométricos 30s x 10"],
+    dieta: "Desayuno: Tortilla de claras + pan integral; Almuerzo: Pavo + batata; Cena: Ensalada + atún."
+  },
+  "Día 4": {
+    titulo: "Hombros y Core",
+    ejercicios: [
+      { nombre: "Press militar", series: 4, repeticiones: "8-12" },
+      { nombre: "Elevaciones laterales", series: 3, repeticiones: "12-15" },
+      { nombre: "Face pulls", series: 3, repeticiones: "12-15" },
+      { nombre: "Encogimientos de trapecio", series: 3, repeticiones: "15-20" }
+    ],
+    core: ["Plancha 3x1min", "Ab wheel 3x15"],
+    hiit: ["Sprints 20s x 12"],
+    dieta: "Desayuno: Smoothie proteína + banana; Almuerzo: Ternera + quinoa; Cena: Verduras + huevo."
+  },
+  "Día 5": {
+    titulo: "Full Body + HIIT",
+    ejercicios: [
+      { nombre: "Kettlebell swings", series: 4, repeticiones: "15-20" },
+      { nombre: "Burpees", series: 4, repeticiones: "15-20" },
+      { nombre: "Jump squats", series: 4, repeticiones: "15-20" },
+      { nombre: "Mountain climbers", series: 4, repeticiones: "30 seg" }
+    ],
+    core: ["Crunches 3x20", "Russian twists 3x30"],
+    hiit: ["Circuito 40s ON / 20s OFF x 5 rondas"],
+    dieta: "Desayuno: Avena + fruta; Almuerzo: Pollo + verduras; Cena: Pescado + ensalada."
   }
 };
 
 export default function App() {
   const [diaSeleccionado, setDiaSeleccionado] = useState("Día 1");
-  const [timer, setTimer] = useState(0);
-  const [activo, setActivo] = useState(false);
   const [progreso, setProgreso] = useState({});
   const [pesoCorporal, setPesoCorporal] = useState([]);
   const [nuevoPeso, setNuevoPeso] = useState("");
+  const [timer, setTimer] = useState(0);
+  const [activo, setActivo] = useState(false);
 
   useEffect(() => {
     let interval;
-    if (activo) interval = setInterval(() => setTimer((t) => t + 1), 1000);
+    if (activo) {
+      interval = setInterval(() => setTimer((t) => t + 1), 1000);
+    }
     return () => clearInterval(interval);
   }, [activo]);
 
-  const iniciarTimer = () => { setActivo(true); setTimer(0); };
+  const iniciarTimer = () => {
+    setActivo(true);
+    setTimer(0);
+  };
   const pausarTimer = () => setActivo(false);
-  const reiniciarTimer = () => { setActivo(false); setTimer(0); };
+  const reiniciarTimer = () => {
+    setActivo(false);
+    setTimer(0);
+  };
 
-  const guardarProgreso = (ejercicio, peso) => {
+  const guardarProgreso = (ejercicio, valor) => {
     setProgreso((prev) => ({
       ...prev,
       [diaSeleccionado]: {
         ...prev[diaSeleccionado],
-        [ejercicio]: peso
+        [ejercicio]: valor
       }
     }));
   };
 
   const registrarPesoCorporal = () => {
-    if (parseFloat(nuevoPeso) > 0) {
+    const pesoNum = parseFloat(nuevoPeso);
+    if (pesoNum > 0) {
       const fecha = new Date().toLocaleDateString();
-      setPesoCorporal([...pesoCorporal, { fecha, peso: parseFloat(nuevoPeso) }]);
+      setPesoCorporal([...pesoCorporal, { fecha, peso: pesoNum }]);
       setNuevoPeso("");
     }
   };
@@ -57,85 +111,120 @@ export default function App() {
   const datos = rutina[diaSeleccionado];
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-center mb-4">Rutina Definición</h1>
-      <div className="grid grid-cols-5 gap-2 mb-4">
+    <div style={{ maxWidth: 500, margin: "auto", fontFamily: "Arial, sans-serif", padding: 20 }}>
+      <h1 style={{ textAlign: "center" }}>Rutina Definición</h1>
+
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
         {Object.keys(rutina).map((dia) => (
-          <Button key={dia} variant={dia === diaSeleccionado ? "default" : "outline"} onClick={() => setDiaSeleccionado(dia)}>
-            {dia.split(" ")[1]}
-          </Button>
+          <button
+            key={dia}
+            onClick={() => setDiaSeleccionado(dia)}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 5,
+              border: dia === diaSeleccionado ? "2px solid #6200ee" : "1px solid #ccc",
+              backgroundColor: dia === diaSeleccionado ? "#dcd6f7" : "white",
+              cursor: "pointer",
+              flex: 1,
+              margin: "0 2px"
+            }}
+          >
+            {dia}
+          </button>
         ))}
       </div>
-      <Card>
-        <CardContent className="p-4">
-          <h2 className="text-xl font-semibold mb-2">{datos.titulo}</h2>
-          {datos.ejercicios && (
-            <div>
-              <p className="font-medium">Ejercicios (registra peso):</p>
-              <ul className="list-none pl-0 mb-2">
-                {datos.ejercicios.map((e, i) => (
-                  <li key={i} className="mb-4 border p-2 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <img src={e.imagen} alt={e.nombre} width={80} height={80} className="rounded" />
-                      <div className="flex-1">
-                        <p className="font-semibold">{e.nombre}</p>
-                        <Input type="number" placeholder="Peso (kg)" className="mt-1" onChange={(ev) => guardarProgreso(e.nombre, ev.target.value)} />
-                        <p className="text-sm text-gray-600">Previo: {progreso[diaSeleccionado]?.[e.nombre] || "-"} kg</p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {datos.core && (
-            <div>
-              <p className="font-medium">Core:</p>
-              <ul className="list-disc pl-6 mb-2">
-                {datos.core.map((c, i) => (<li key={i}>{c}</li>))}
-              </ul>
-            </div>
-          )}
-          {datos.hiit && (
-            <div>
-              <p className="font-medium">HIIT:</p>
-              <ul className="list-disc pl-6 mb-2">
-                {datos.hiit.map((h, i) => (<li key={i}>{h}</li>))}
-              </ul>
-            </div>
-          )}
-          <div className="mt-4">
-            <p className="font-medium">Dieta sugerida para hoy:</p>
-            <p className="text-sm text-gray-700">{datos.dieta}</p>
-          </div>
-        </CardContent>
-      </Card>
 
-      <div className="mt-4 text-center">
-        <p className="text-lg font-bold">Timer: {Math.floor(timer / 60)}:{("0" + (timer % 60)).slice(-2)}</p>
-        <div className="flex justify-center gap-2 mt-2">
-          <Button onClick={iniciarTimer}>Iniciar</Button>
-          <Button onClick={pausarTimer} variant="outline">Pausar</Button>
-          <Button onClick={reiniciarTimer} variant="destructive">Reiniciar</Button>
+      <h2>{datos.titulo}</h2>
+
+      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>
+        <thead>
+          <tr>
+            <th style={{ borderBottom: "2px solid #ccc", padding: 8, textAlign: "left" }}>Ejercicio</th>
+            <th style={{ borderBottom: "2px solid #ccc", padding: 8, textAlign: "center" }}>Series</th>
+            <th style={{ borderBottom: "2px solid #ccc", padding: 8, textAlign: "center" }}>Repeticiones</th>
+            <th style={{ borderBottom: "2px solid #ccc", padding: 8, textAlign: "center" }}>Peso (kg)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {datos.ejercicios.map(({ nombre, series, repeticiones }) => (
+            <tr key={nombre}>
+              <td style={{ borderBottom: "1px solid #eee", padding: 8 }}>{nombre}</td>
+              <td style={{ borderBottom: "1px solid #eee", padding: 8, textAlign: "center" }}>{series}</td>
+              <td style={{ borderBottom: "1px solid #eee", padding: 8, textAlign: "center" }}>{repeticiones}</td>
+              <td style={{ borderBottom: "1px solid #eee", padding: 8, textAlign: "center" }}>
+                <input
+                  type="number"
+                  min="0"
+                  value={progreso[diaSeleccionado]?.[nombre] || ""}
+                  onChange={(e) => guardarProgreso(nombre, e.target.value)}
+                  style={{ width: 70, padding: 4, textAlign: "center" }}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h3>Ejercicios Core</h3>
+      <ul>
+        {datos.core.map((c) => (
+          <li key={c}>{c}</li>
+        ))}
+      </ul>
+
+      <h3>Entrenamiento HIIT</h3>
+      <ul>
+        {datos.hiit.map((h) => (
+          <li key={h}>{h}</li>
+        ))}
+      </ul>
+
+      <h3>Dieta sugerida</h3>
+      <p>{datos.dieta}</p>
+
+      <div style={{ textAlign: "center", marginTop: 20 }}>
+        <p style={{ fontWeight: "bold" }}>
+          Timer: {Math.floor(timer / 60)}:{("0" + (timer % 60)).slice(-2)}
+        </p>
+        <div>
+          <button onClick={iniciarTimer} style={{ marginRight: 10 }}>
+            Iniciar
+          </button>
+          <button onClick={pausarTimer} style={{ marginRight: 10 }}>
+            Pausar
+          </button>
+          <button onClick={reiniciarTimer}>Reiniciar</button>
         </div>
       </div>
 
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Registro de peso corporal</h3>
-        <div className="flex gap-2 mb-2">
-          <Input type="number" value={nuevoPeso} placeholder="Peso (kg)" onChange={(e) => setNuevoPeso(e.target.value)} />
-          <Button onClick={registrarPesoCorporal}>Agregar</Button>
-        </div>
+      <div style={{ marginTop: 30 }}>
+        <h3>Registro de peso corporal</h3>
+        <input
+          type="number"
+          placeholder="Peso (kg)"
+          value={nuevoPeso}
+          onChange={(e) => setNuevoPeso(e.target.value)}
+          style={{ padding: 6, width: 100, marginRight: 10 }}
+        />
+        <button onClick={registrarPesoCorporal}>Agregar</button>
+
         {pesoCorporal.length > 0 && (
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={pesoCorporal}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="fecha" />
-              <YAxis domain={["auto", "auto"]} />
-              <Tooltip />
-              <Line type="monotone" dataKey="peso" stroke="#8884d8" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <table style={{ width: "100%", marginTop: 15, borderCollapse: "collapse" }}>
+            <thead>
+              <tr>
+                <th style={{ borderBottom: "2px solid #ccc", padding: 8 }}>Fecha</th>
+                <th style={{ borderBottom: "2px solid #ccc", padding: 8, textAlign: "center" }}>Peso (kg)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pesoCorporal.map(({ fecha, peso }, i) => (
+                <tr key={i}>
+                  <td style={{ borderBottom: "1px solid #eee", padding: 8 }}>{fecha}</td>
+                  <td style={{ borderBottom: "1px solid #eee", padding: 8, textAlign: "center" }}>{peso}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>
